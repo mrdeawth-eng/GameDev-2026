@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GameDev 2026 — คลังของวิเศษ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --doraemon-blue: #1E9BD7;
+    --doraemon-blue-deep: #0A6FA8;
+    --night-navy: #0B3A57;
+    --bell-yellow: #FFC72C;
+    --bell-yellow-deep: #F0A400;
+    --nose-red: #E4433A;
+    --face-cream: #FFF8EC;
+    --pocket-white: #FFFFFF;
+    --whisker-grey: #E9EEF2;
+    --ink: #123047;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin: 0;
+    font-family: 'Noto Sans Thai', 'Baloo 2', sans-serif;
+    background: linear-gradient(180deg, var(--doraemon-blue) 0%, var(--doraemon-blue-deep) 45%, var(--night-navy) 100%);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .display{
+    font-family: 'Baloo 2', 'Noto Sans Thai', sans-serif;
+  }
+
+  /* ---------- floating paw print background ---------- */
+  .paw-field{
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.10;
+  }
+  .paw-field svg{ width: 100%; height: 100%; }
+
+  /* ---------- top bell bar ---------- */
+  .bell-bar{
+    position: relative;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 0 6px;
+    color: var(--bell-yellow);
+  }
+  .bell-bar .line{
+    width: 46px;
+    height: 3px;
+    background: var(--bell-yellow);
+    border-radius: 3px;
+    opacity: 0.7;
+  }
+  .bell-bar span{
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    font-weight: 600;
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    position: relative;
+    z-index: 2;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px 24px 60px;
+    text-align: center;
+  }
+
+  .bell-badge{
+    width: 132px;
+    height: 132px;
+    margin: 18px auto 8px;
+    position: relative;
+    filter: drop-shadow(0 10px 22px rgba(0,0,0,0.25));
+  }
+  .bell-badge .collar{
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 132px; height: 34px;
+    background: var(--nose-red);
+    border-radius: 16px;
+    border: 4px solid #fff;
+  }
+  .bell-badge .bell{
+    position: absolute;
+    top: 26px; left: 50%;
+    transform: translateX(-50%);
+    width: 100px; height: 100px;
+    background: radial-gradient(circle at 35% 30%, #FFE18A 0%, var(--bell-yellow) 45%, var(--bell-yellow-deep) 100%);
+    border-radius: 50%;
+    border: 4px solid #B87800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .bell-badge .bell::after{
+    content: "";
+    width: 8px; height: 8px;
+    background: #B87800;
+    border-radius: 50%;
+    box-shadow: 0 8px 0 #B87800;
+  }
+  .bell-badge .bell-lines{
+    position: absolute;
+    top: 44px; left: 50%;
+    transform: translateX(-50%);
+    width: 70px; height: 2px;
+    background: #B87800;
+    opacity: 0.5;
+    box-shadow: 0 18px 0 #B87800;
+  }
+
+  h1.title{
+    font-size: clamp(2.4rem, 6vw, 3.6rem);
+    color: #fff;
+    margin: 6px 0 4px;
+    font-weight: 800;
+    text-shadow: 0 4px 0 rgba(10,40,60,0.35);
+    letter-spacing: 0.01em;
+  }
+  h1.title .accent{
+    color: var(--bell-yellow);
+  }
+
+  .subtitle{
+    font-size: 1.05rem;
+    color: #EAF6FF;
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.7;
+    opacity: 0.92;
+  }
+
+  .door-cta{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 28px;
+    padding: 14px 30px;
+    background: var(--nose-red);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    border-radius: 999px;
+    text-decoration: none;
+    box-shadow: 0 8px 0 #A82A24, 0 14px 24px rgba(0,0,0,0.25);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .door-cta:hover{
+    transform: translateY(2px);
+    box-shadow: 0 6px 0 #A82A24, 0 10px 18px rgba(0,0,0,0.25);
+  }
+  .door-cta:active{
+    transform: translateY(8px);
+    box-shadow: 0 0 0 #A82A24, 0 4px 10px rgba(0,0,0,0.2);
+  }
+
+  /* ---------- pocket section ---------- */
+  .pocket-section{
+    position: relative;
+    z-index: 2;
+    background: var(--face-cream);
+    border-radius: 48px 48px 0 0;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 80px;
+    box-shadow: 0 -12px 40px rgba(0,0,0,0.18);
+  }
+
+  .pocket-heading{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+  .pocket-heading .whisker{
+    width: 60px;
+    height: 2px;
+    background: var(--doraemon-blue-deep);
+    opacity: 0.3;
+  }
+  .pocket-heading h2{
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--doraemon-blue-deep);
+    margin: 0;
+  }
+
+  .pocket-note{
+    text-align: center;
+    color: #5A7182;
+    font-size: 0.95rem;
+    margin-bottom: 40px;
+  }
+
+  .gadget-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+  }
+
+  .gadget-card{
+    position: relative;
+    background: var(--pocket-white);
+    border: 3px solid var(--whisker-grey);
+    border-radius: 28px;
+    padding: 28px 22px 24px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--ink);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+  }
+  .gadget-card::before{
+    content: "";
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 100px; height: 100px;
+    background: var(--doraemon-blue);
+    opacity: 0.07;
+    border-radius: 50%;
+  }
+  .gadget-card:hover{
+    transform: translateY(-6px);
+    border-color: var(--doraemon-blue);
+    box-shadow: 0 16px 30px rgba(30,155,215,0.18);
+  }
+
+  .gadget-icon{
+    width: 64px; height: 64px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: linear-gradient(160deg, var(--doraemon-blue) 0%, var(--doraemon-blue-deep) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 28px;
+    box-shadow: 0 6px 0 rgba(10,111,168,0.35);
+  }
+
+  .gadget-card h3{
+    font-size: 1.15rem;
+    margin: 0 0 6px;
+    font-weight: 700;
+  }
+  .gadget-card p{
+    font-size: 0.88rem;
+    color: #6C8291;
+    margin: 0 0 4px;
+    line-height: 1.55;
+  }
+  .gadget-tag{
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--doraemon-blue-deep);
+    background: rgba(30,155,215,0.1);
+    padding: 4px 12px;
+    border-radius: 999px;
+  }
+
+  .empty-slot{
+    border-style: dashed;
+    color: #A9BAC6;
+  }
+  .empty-slot .gadget-icon{
+    background: var(--whisker-grey);
+    color: #A9BAC6;
+    box-shadow: none;
+  }
+  .empty-slot:hover{
+    transform: none;
+    border-color: var(--whisker-grey);
+    box-shadow: none;
+  }
+
+  footer{
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 24px;
+    color: rgba(255,255,255,0.65);
+    font-size: 0.82rem;
+    background: var(--night-navy);
+  }
+  footer a{ color: var(--bell-yellow); text-decoration: none; }
+
+  @media (prefers-reduced-motion: reduce){
+    .gadget-card, .door-cta{ transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="paw-field" aria-hidden="true">
+  <svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice">
+    <g fill="#ffffff">
+      <ellipse cx="60" cy="60" rx="10" ry="13"/>
+      <ellipse cx="85" cy="45" rx="8" ry="10"/>
+      <ellipse cx="35" cy="45" rx="8" ry="10"/>
+      <ellipse cx="60" cy="90" rx="16" ry="14"/>
+
+      <ellipse cx="300" cy="150" rx="10" ry="13"/>
+      <ellipse cx="325" cy="135" rx="8" ry="10"/>
+      <ellipse cx="275" cy="135" rx="8" ry="10"/>
+      <ellipse cx="300" cy="180" rx="16" ry="14"/>
+
+      <ellipse cx="150" cy="300" rx="10" ry="13"/>
+      <ellipse cx="175" cy="285" rx="8" ry="10"/>
+      <ellipse cx="125" cy="285" rx="8" ry="10"/>
+      <ellipse cx="150" cy="330" rx="16" ry="14"/>
+    </g>
+  </svg>
+</div>
+
+<div class="bell-bar">
+  <div class="line"></div>
+  <span class="display">DOKODEMO GAME DOOR</span>
+  <div class="line"></div>
+</div>
+
+<section class="hero">
+  <div class="bell-badge" aria-hidden="true">
+    <div class="collar"></div>
+    <div class="bell"><div class="bell-lines"></div></div>
+  </div>
+
+  <h1 class="title display">Game<span class="accent">Dev</span> 2026</h1>
+  <p class="subtitle">
+    ประตูไปไหนก็ได้สู่เกมทุกตัวที่ทำในคลาสนี้ — หยิบของวิเศษจากกระเป๋า 4 มิติ
+    แล้วกดเข้าไปเล่นได้เลย ไม่ต้องดาวน์โหลดอะไรทั้งนั้น
+  </p>
+
+  <a class="door-cta" href="#pocket">
+    <span>เปิดกระเป๋า 4 มิติ</span>
+    <span aria-hidden="true">→</span>
+  </a>
+</section>
+
+<section class="pocket-section" id="pocket">
+  <div class="pocket-heading">
+    <div class="whisker"></div>
+    <h2 class="display">ของวิเศษในกระเป๋า</h2>
+    <div class="whisker"></div>
+  </div>
+  <p class="pocket-note">รวมเกมและแล็บทั้งหมด — คลิกการ์ดเพื่อเข้าเล่น</p>
+
+  <div class="gadget-grid">
+
+    <a class="gadget-card" href="game21/index.html">
+      <div class="gadget-icon">🚀</div>
+      <h3>Game 21</h3>
+      <p>ภารกิจบินท่ามกลางเมฆ หลบสิ่งกีดขวางให้ได้ไกลที่สุด</p>
+      <span class="gadget-tag">เล่นเลย</span>
+    </a>
+
+    <div class="gadget-card empty-slot">
+      <div class="gadget-icon">➕</div>
+      <h3>ช่องว่าง</h3>
+      <p>เตรียมไว้สำหรับเกมโปรเจกต์ถัดไป</p>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  ทำด้วย Godot Engine · โฮสต์บน GitHub Pages ·
+  <a href="https://github.com/mrdeawth-eng/GameDev2026" target="_blank" rel="noopener">ดูซอร์สโค้ด</a>
+</footer>
+
+</body>
+</html>
